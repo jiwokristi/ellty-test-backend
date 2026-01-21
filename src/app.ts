@@ -9,6 +9,8 @@ import xss from 'xss-clean';
 import hpp from 'hpp';
 import cookieParser from 'cookie-parser';
 
+import userRouter from 'routes/userRoutes.js';
+
 import globalErrorHandler from 'controllers/errorController.js';
 
 import __dirname from 'constants/dirname.js';
@@ -42,7 +44,7 @@ app.use(cookieParser());
 app.use(hpp({ whiteList: [] }));
 
 // * 2) ROUTES
-// app.use('/', (req, res) => {});
+app.use('/api/v1/users', userRouter);
 
 app.all('*path', (req, res, next) => {
   next();
