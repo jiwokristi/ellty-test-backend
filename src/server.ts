@@ -3,28 +3,18 @@ import mongoose from 'mongoose';
 process.on('uncaughtException', err => {
   console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
   console.log(err.name, err.message);
-  process.exit(1); 
+  process.exit(1);
 });
 
 import './config/env.js';
 import app from './app.js';
 
-let DB;
-if (process.env.DATABASE_STANDARD && process.platform === 'win32') {
-  console.log('Using standard MongoDB URI for Windows...');
-  DB = process.env.DATABASE_STANDARD.replace(
-    '<db_password>',
-    process.env.DATABASE_PASSWORD as string,
-  );
-} else {
-  DB = (process.env.DATABASE as string).replace(
-    '<db_password>',
-    process.env.DATABASE_PASSWORD as string,
-  );
-}
+const clientOptions: mongoose.ConnectOptions = {
+  serverApi: { version: '1', strict: true, deprecationErrors: true },
+};
 
 mongoose
-  .connect(DB)
+  .connect(process.env.DATABASE as string, clientOptions)
   .then(() => console.log('DB connection successful! 😍'))
   .catch(err => {
     console.log('DB connection error! 💥');
