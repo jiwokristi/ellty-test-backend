@@ -37,7 +37,9 @@ export const createSendToken = (
     status: 'success',
     token,
     data: {
-      user,
+      data: {
+        user,
+      },
     },
   });
 };
