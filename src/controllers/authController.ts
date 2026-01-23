@@ -48,6 +48,8 @@ export const logout = (req: Request, res: Response, next: NextFunction) => {
 export const getMe = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user;
+    res.set('Cache-Control', 'no-store');
+    res.set('Pragma', 'no-cache');
     res.json({ status: 'success', data: { data: { user } } });
   },
 );
