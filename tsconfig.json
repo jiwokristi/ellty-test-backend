@@ -17,7 +17,9 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
 
-    "moduleResolution": "nodenext"
+    "moduleResolution": "nodenext",
+    "outDir": "dist",
+    "rootDir": "src"
   },
   "include": ["src", "src/config/env.ts"]
 }
