@@ -1,11 +1,9 @@
 import path from 'path';
 import express from 'express';
+import cors from 'cors';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
-import mongoSanitize from 'express-mongo-sanitize';
-// @ts-ignore package has no official TypeScript type definitions.
-import xss from 'xss-clean';
 import hpp from 'hpp';
 import cookieParser from 'cookie-parser';
 
@@ -33,13 +31,15 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  }),
+);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
-
-//! deprecated
-// app.use(mongoSanitize());
-// app.use(xss());
 
 // @ts-ignore package has no official TypeScript type definitions.
 app.use(hpp({ whiteList: [] }));

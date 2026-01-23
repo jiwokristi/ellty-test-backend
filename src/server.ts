@@ -10,7 +10,12 @@ import './config/env.js';
 import app from './app.js';
 
 const clientOptions: mongoose.ConnectOptions = {
-  serverApi: { version: '1', strict: true, deprecationErrors: true },
+  serverApi: {
+    version: '1',
+    strict: true,
+    deprecationErrors: true,
+  },
+  connectTimeoutMS: 5000,
 };
 
 mongoose
@@ -18,7 +23,7 @@ mongoose
   .then(() => console.log('DB connection successful! 😍'))
   .catch(err => {
     console.log('DB connection error! 💥');
-    console.log(err.name, err.message);
+    console.log(err.name, '=====', err.message);
   });
 
 const port = process.env.PORT || 3000;
