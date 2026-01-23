@@ -1,0 +1,11 @@
+version: '3.9'
+
+services:
+  backend:
+    image: priyadijiwo/ellty-test-backend:latest
+    container_name: ellty-test-backend
+    ports:
+      - '3000:3000' # maps server port 3000 to container
+    env_file:
+      - .env # optional, for environment variables
+    restart: always # ensures container restarts on crash or server reboot

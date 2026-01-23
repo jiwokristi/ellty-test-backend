@@ -2,6 +2,9 @@ import { Document, InferSchemaType, model, Query, Schema } from 'mongoose';
 
 import AppError from 'utils/appError.js';
 
+const operations = ['+', '-', '*', '/'] as const;
+type Operation = (typeof operations)[number];
+
 const postSchema = new Schema({
   parentId: {
     type: Schema.ObjectId,
@@ -18,14 +21,25 @@ const postSchema = new Schema({
   },
   operation: {
     type: String,
-    enum: ['+', '-', '*', '/'],
-    required: [true, 'A post must have an operation!'],
-    validate: {
-      validator: function (val: string) {
-        return !(val === '/' && this.operand === 0);
+    enum: operations,
+    validate: [
+      {
+        validator: function (val: string) {
+          return !(val === '/' && this.operand === 0);
+        },
+        message: 'Cannot divide by zero!',
       },
-      message: 'Cannot divide by zero!',
-    },
+      {
+        validator: function (val: string) {
+          if (!!this.parentId) {
+            return !!val;
+          }
+
+          return true;
+        },
+        message: 'A post must have an operation!',
+      },
+    ],
   },
   value: Number,
   createdAt: {
@@ -62,7 +76,11 @@ postSchema.pre('save', async function () {
   const parent = (await this.model('Post').findById(this.parentId)) as IPost;
   if (!parent) throw new AppError('Parent post not found!', 404);
 
-  this.value = compute(parent.value as number, this.operation, this.operand);
+  this.value = compute(
+    parent.value as number,
+    this.operation as Operation,
+    this.operand,
+  );
   return;
 });
 
