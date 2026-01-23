@@ -26,6 +26,7 @@ export const createSendToken = (
     ),
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none',
   };
 
   res.cookie('jwt', token, cookieOptions);
@@ -37,7 +38,9 @@ export const createSendToken = (
     status: 'success',
     token,
     data: {
-      user,
+      data: {
+        user,
+      },
     },
   });
 };

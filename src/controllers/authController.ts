@@ -45,6 +45,52 @@ export const logout = (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({ status: 'success' });
 };
 
+export const getMe = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user;
+    res.json({ status: 'success', data: { data: { user } } });
+  },
+);
+
+export const attachUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    let token;
+
+    if (req.headers.authorization?.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    } else if (req.cookies.jwt) {
+      token = req.cookies.jwt;
+    }
+
+    if (!token) {
+      req.user = null;
+      return next();
+    }
+
+    const jwtVerifyPromisified = (token: string, secret: string) => {
+      return new Promise((resolve, reject) => {
+        jwt.verify(token, secret, {}, (err, payload) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(payload);
+          }
+        });
+      });
+    };
+
+    const decoded = (await jwtVerifyPromisified(
+      token,
+      process.env.JWT_SECRET as string,
+    )) as JwtPayload;
+
+    const currentUser = await User.findById(decoded.id);
+    req.user = currentUser ?? null;
+
+    next();
+  },
+);
+
 export const protect = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     let token;
